@@ -20,6 +20,8 @@ app.get('/train/trains', async (req, res) => {
             },
         });
 
+        console.log(response)
+
         // This code block is filtering out the response.data array to only include trains that do not leave in the next 30 minutes.
         const trains = response.data.filter((train) => {
             const currentTime = new Date();
