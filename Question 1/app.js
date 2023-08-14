@@ -43,8 +43,6 @@ app.get('/train/trains', async (req, res) => {
                 }
             });
 
-            // console.log(filteredTrains);
-
             const sortedTrains = filteredTrains.sort((a, b) => {
                 // sort by ascending order of price
                 if (a.price.sleeper + a.price.AC < b.price.sleeper + b.price.AC) {
@@ -79,6 +77,17 @@ app.get('/train/trains', async (req, res) => {
                 return 0;
             });
 
+            console.log(sortedTrains);
+
+            // // including the trains that fulfill the allowed time windows
+            // const apiResponse = sortedTrains.filter(train => {
+            //     const departureTime = new Date(train.departureTime);
+            //     const currentTime = new Date();
+            //     const timeDiff = (departureTime.getTime() - currentTime.getTime()) / (1000 * 60);
+            //     const delay = train.delay || 0;
+            //     return timeDiff + delay <= 120;
+            // });
+
             // checking with log
             console.log(sortedTrains);
             res.send(sortedTrains);
@@ -88,7 +97,27 @@ app.get('/train/trains', async (req, res) => {
         });
 });
 
+app.get('/train/trains/:trainNumber', async (req, res) => {
+    const trainNumber = req.params.trainNumber;
+
+    await axios.get(
+        `${process.env.TRAIN_API}/${trainNumber}`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
+            }
+        }
+    )
+        .then((response) => {
+            const trainDetails = response.data;
+            console.log(trainDetails);
+            res.send(trainDetails);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
 app.listen(3000, () => {
     console.log('Server started on port 3000');
 });
-
